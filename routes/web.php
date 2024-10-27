@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheckoutController;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,3 +39,13 @@ Route::get('productos/{producto}/edit', [ProductController::class, 'edit'])->nam
 Route::put('productos/{producto}', [ProductController::class, 'update'])->name('productos.update');
 
 Route::get('/secret', [App\Http\Controllers\ProductController::class, 'secret'])->name('secret');
+
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::post('/cart/add/{productId}', [CartController::class, 'add'])->name('cart.add');
+    Route::delete('/cart/remove/{itemId}', [CartController::class, 'remove'])->name('cart.remove');
+});
+
+Route::post('/checkout', [CheckoutController::class, 'checkout'])->name('cart.checkout');
+Route::post('/checkout', [CheckoutController::class, 'checkout'])->name('checkout');

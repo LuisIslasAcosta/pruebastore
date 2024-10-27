@@ -54,8 +54,14 @@
                                 <form action="" method="POST" style="display:inline;">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-danger">Añadir al carrito</button>
                                 </form>
+                                <div class="mt-2">
+                                    <a href="{{ route('productos.show', $producto->id) }}" class="btn btn-warning">Detalles del Producto</a>
+                                    <form action="{{ route('cart.add', $producto->id) }}" method="POST" style="display:inline;">
+                                        @csrf
+                                        <button type="submit" class="btn btn-primary">Añadir al Carrito</button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
