@@ -4,6 +4,14 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Producto;
+use App\Models\Proveedor;
+use App\Models\CategoriaDeProducto;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+
+use App\Exports\ProductosExport;
+use Maatwebsite\Excel\Facades\Excel;
+
 
 class HomeController extends Controller
 {

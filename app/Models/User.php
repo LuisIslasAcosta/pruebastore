@@ -42,4 +42,20 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    /**
+     * Definir la relación muchos a muchos con el modelo Role.
+     */
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class);
+    }
+
+    /**
+     * Verificar si el usuario tiene un rol específico.
+     */
+    public function hasRole($role)
+    {
+        return $this->roles->contains('name', $role);
+    }
 }

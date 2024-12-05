@@ -4,38 +4,51 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Cart;
+use App\Models\CartItem;
+use App\Models\Producto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class CheckoutController extends Controller
 {
-    public function checkout(Request $request)
+    public function remove(Request $request)
     {
-        // Asumiendo que tienes el carrito disponible en la sesión
-        $cart = session('cart'); // o como estés manejando el carrito
-        if (!$cart || empty($cart['items'])) {
-            return redirect()->route('cart.index')->with('error', 'El carrito está vacío.');
+        // Verifica si el carrito tiene productos
+        $cart = $request->session()->get('cart');
+
+        if ($cart && $cart->items->isNotEmpty()) {
+            // Eliminar todos los productos de la tabla 'productos'
+            Producto::query()->delete();  // Elimina todos los productos de la base de datos
+
+            // Vaciar el carrito de la sesión
+            $request->session()->forget('cart');
+
+            // Redirigir con un mensaje de éxito
+            return redirect()->route('productos.privada')->with('success', 'Compra realizada y todos los productos eliminados.');
         }
 
-        // Crear la orden
-        $order = Order::create([
-            'user_id' => Auth::id(),
-            'total' => $cart['total'], // Asumiendo que tienes el total en la sesión
-        ]);
-
-        // Crear los items de la orden
-        foreach ($cart['items'] as $item) {
-            OrderItem::create([
-                'order_id' => $order->id,
-                'product_id' => $item['product_id'],
-                'quantity' => $item['quantity'],
-                'price' => $item['price'],
-            ]);
-        }
-
-        // Limpiar el carrito (opcional)
-        session()->forget('cart');
-
-        return redirect()->route('cart.index')->with('success', 'Pedido realizado con éxito.');
+        return redirect()->route('productos.privada')->with('error', 'No hay productos en el carrito.');
     }
+
+    public function removeAll()
+{
+    // Eliminar todos los productos del carrito (tabla cart_items)
+    CartItem::query()->delete();
+
+    // Si deseas restaurar el stock de los productos eliminados del carrito:
+    $cartItems = CartItem::all();  // Obtener todos los productos del carrito
+
+    foreach ($cartItems as $item) {
+        $producto = Producto::find($item->product_id);
+        if ($producto) {
+            // Reponer el stock de los productos eliminados del carrito
+            $producto->increment('stock', $item->quantity);
+        }
+    }
+
+    // Redirigir con mensaje de éxito
+    return redirect()->route('productos.privada')->with('success', 'Tus productos te llegaran pronto, gracias por tu compra');
+}
+
 }

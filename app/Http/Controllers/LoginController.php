@@ -52,4 +52,30 @@ class LoginController extends Controller
 
         return redirect(route('login'));
     }
+
+    public function showAdminLoginForm()
+    {
+        return view('auth.admin-login');  // Asegúrate de crear la vista admin-login
+    }
+
+    // Manejar el login de administrador
+    public function adminLogin(Request $request)
+    {
+        // Validar los datos
+        $credentials = $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required', 'min:8'],
+        ]);
+
+        // Verificar si el usuario es administrador
+        $user = User::where('email', $credentials['email'])->first();
+
+        if ($user && $user->hasRole('admin') && Auth::attempt($credentials)) {
+            return redirect()->route('admin.dashboard');  // Ruta del dashboard del admin
+        }
+
+        return back()->withErrors([
+            'email' => 'Las credenciales proporcionadas no son válidas o no tienes acceso de administrador.',
+        ]);
+    }
 }
