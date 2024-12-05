@@ -154,8 +154,8 @@
 <body>
     <section>
         <div class="contenedor">
-            <h2>Iniciar sesión</h2>
-            <form action="{{ route('iniciar-sesion') }}" method="POST">
+            <h2>Iniciar como Admin</h2>
+            <form action="{{ route('admin.login.post') }}" method="POST">
                 @csrf
                 <div class="input-contenedor mb-4">
                     <input type="email" id="email" name="email" required />
@@ -165,17 +165,24 @@
                     <input type="password" id="password" name="password" required />
                     <label for="password">Contraseña</label>
                 </div>
-                <button type="submit">Acceder</button>
+                <button type="submit">Iniciar sesión</button>
             </form>
+
+            <!-- Mostrar errores de validación -->
+            @if ($errors->any())
+                <div>
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <!-- Enlace para iniciar sesión como administrador -->
             <div class="registrar">
-                <p class="mb-0">¿Aún no tienes cuenta?</p>
-                <a href="{{ route('registro') }}">Crear nueva cuenta</a>
-            </div>
-            <div class="registrar">
-                <p class="mb-0">¿Eres administrador?</p>
-                <a href="{{ route('admin.login') }}">Inicia sesión con admin</a>
-                <hr>
-                <a href="{{ url('/') }}">Volver a pantalla de inicio</a>
+                <p class="mb-0">¿No eres administrador?</p>
+                <a href="{{ route('login') }}">Inicia sesión como usuario</a>
             </div>
         </div>
     </section>

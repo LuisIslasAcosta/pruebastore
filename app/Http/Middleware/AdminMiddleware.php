@@ -1,0 +1,19 @@
+<?php
+
+// AdminMiddleware.php
+namespace App\Http\Middleware;
+
+use Closure;
+use Illuminate\Http\Request;
+
+class AdminMiddleware
+{
+    public function handle(Request $request, Closure $next)
+    {
+        if (auth()->user() && auth()->user()->hasRole('admin')) {
+            return $next($request);
+        }
+
+        return redirect()->route('admin.productos.index')->with('error', 'No tienes acceso a esta página.');
+    }
+}
